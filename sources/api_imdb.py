@@ -1,5 +1,7 @@
 from imdb import IMDb
 import files
+from datetime import datetime
+import pprint
 
 def progress_bar(total, current, description, prefix):
     """
@@ -14,7 +16,7 @@ def progress_bar(total, current, description, prefix):
     print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, description), end="\r")
 
     if total == current:
-        print("\r")
+        print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, "Completed"), end="\r")
 
 class API_IMDb():
     def __init__(self, show_id):
@@ -65,7 +67,13 @@ class API_IMDb():
         """
         Downloads reviews for one episode and returns it
         """
-        return self.imdb.get_movie(episode_id, info=['vote details'])['arithmetic mean']
+        episode = IMDb().get_movie(episode_id, info=['main', 'plot', 'vote details'])
+
+        # Check if episode has been aired alreary
+        if not 'plot' in episode.keys() or datetime.strptime(episode['original air date'], '%d %b %Y') > datetime.now():
+            return 0
+
+        return episode['arithmetic mean']
 
     def download_number_of_votes(self, save):
         """
@@ -111,7 +119,13 @@ class API_IMDb():
         """
         Downloads number of votes for one episode and returns it
         """
-        return self.imdb.get_movie(episode_id)['votes']
+        episode = IMDb().get_movie(episode_id, info=['main', 'plot', 'vote details'])
+
+        # Check if episode has been aired alreary
+        if not 'plot' in episode.keys() or datetime.strptime(episode['original air date'], '%d %b %Y') > datetime.now():
+            return 0
+        
+        return episode['votes']
     
     @property
     def is_show(self):
@@ -122,3 +136,4 @@ class API_IMDb():
 
 
 rev = API_IMDb(2661044).download_reviews(False)
+pprint.pprint(rev)
