@@ -2,3 +2,4 @@
 test.py
 /venv/*
 /Show_Details.egg-info/*
+settings.json
