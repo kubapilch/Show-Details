@@ -20,5 +20,3 @@ def load_data_from_file(data_type, show_name):
     except FileNotFoundError:
         # File does not exist, ask user if he/she wants to download it
         raise Exception("File '{0}_{1}' does not exist, run the script with -l or -i flag to download the data first".format(data_type, show_name))
-
-load_data_from_file("votes", "inny cos")
