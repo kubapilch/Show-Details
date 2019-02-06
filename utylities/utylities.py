@@ -8,10 +8,11 @@ def retrive_id_from_link(link):
 
     elements = link.split("/")
 
-    for element in elements:
+    # elements[2:] because first two elementes are from https
+    for element in elements[2:]:
         if "tt" in element:
             # Id found retrive it and break the loop
-            id = int(element[2:])
+            id = element[2:]
             break
     else:
         # Didn't find the id
