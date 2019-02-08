@@ -2,6 +2,9 @@ from imdb import IMDb
 from sources.files_io import save_data_to_file
 from datetime import datetime
 from sys import stdout
+from collections import OrderedDict
+from pprint import pprint
+import operator
 
 def progress_bar(total, current, description, prefix):
     """
@@ -35,10 +38,12 @@ class API_IMDb():
         """
 
         # Get the entire show seasons and episodes, retrives dictionary of dictionaries
-        show = self.imdb.get_movie(self.show_id, info=['episodes', 'main']) 
-        serie = show['episodes']
-
-        reviews = {}
+        show = self.imdb.get_movie(self.show_id, info=['episodes', 'main'])
+        
+        # Sort dictionary by season and create OrderedDict out of it
+        serie = OrderedDict(sorted(show['episodes'].items(), key=operator.itemgetter(0)))
+        
+        reviews = OrderedDict()
         current_episode = 0
 
         # Iterate through every season
@@ -87,9 +92,11 @@ class API_IMDb():
         """
         # Get the entire show seasons and episodes, retrives dictionary of dictionaries
         show = self.imdb.get_movie(self.show_id, info=['episodes', 'main']) 
-        serie = show['episodes']
+        
+        # Sort dictionary by season and create OrderedDict out of it
+        serie = OrderedDict(sorted(show['episodes'].items(), key=operator.itemgetter(0)))
 
-        votes = {}
+        votes = OrderedDict()
         current_episode = 0
 
         # Iterate through every season

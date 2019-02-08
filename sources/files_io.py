@@ -1,4 +1,5 @@
 import json
+from collections import OrderedDict
 
 def save_data_to_file(data, data_type, show_name):
     """
@@ -20,7 +21,7 @@ def load_data_from_file(data_type, show_name):
 
         with open("{0}_{1}.json".format(data_type, show_name), "r") as f:
             # File exists, load and return data
-            data = json.load(f)
+            data = OrderedDict(json.load(f))
             return data
 
     except FileNotFoundError:
