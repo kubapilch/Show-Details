@@ -1,4 +1,5 @@
 from collections import OrderedDict
+
 def retrive_id_from_link(link):
     """
     Parse the link and retrives the id of a show
@@ -33,7 +34,7 @@ def normalize_data(data):
     for season in data.values():
         top = max(season) if top < max(season) else top
 
-    data_noramlized = {}
+    data_noramlized = OrderedDict()
 
     # Loop through seasons
     for season, votes in zip(data.keys(), data.values()):

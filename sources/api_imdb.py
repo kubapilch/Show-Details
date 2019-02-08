@@ -8,20 +8,20 @@ def progress_bar(total, current, description, prefix):
     """
     Creates progress bar with description
     """
-    lenght = 100
+    lenght = 100 # TODO: Make smaller progress bar so it fits smaller terminal
     
     percent = round(float(current) * 100/float(total), 2)
     filled = int(lenght * current // total)
     bar = filled * "#" + "-" * (lenght-filled)
     
     # Clear the line before writing
-    print( "\r"+ (" " * 171), end='\r')
+    print( "\r"+ (" " * (lenght+71)), end='\r')
 
     print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, description), end="\r")
 
     if total == current:
         # Clear the line before writing
-        print( "\r"+ (" " * 171), end='\r')
+        print( "\r"+ (" " * (lenght+71)), end='\r')
 
         print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, "Completed"))
 
@@ -68,7 +68,7 @@ class API_IMDb():
         # Check if user wants to save data
         if save:
             # Save reviews to a file
-            save_data_to_file(reviews, "reviews", show['title'])
+            save_data_to_file(reviews, "reviews", self.show_id)
 
         return reviews
 
@@ -110,7 +110,7 @@ class API_IMDb():
                 episde_id = episodeObject.getID()
                 
                 # Download votes for episode
-                episode_review = self._download_review_for_episode(episde_id)
+                episode_review = self._download_number_of_votes_for_episode(episde_id)
 
                 # Make sure that the list for this season is created and append that list with episode votes
                 if "Season{0}".format(season) in votes.keys():
@@ -121,7 +121,7 @@ class API_IMDb():
         # Check if user wants to save data
         if save:
             # Save votes to a file
-            save_data_to_file(votes, "votes", show['title'])
+            save_data_to_file(votes, "votes", self.show_id)
         
         return votes
 
@@ -135,7 +135,7 @@ class API_IMDb():
         # Check if episode has been aired already
         if not 'plot' in episode.keys() or datetime.strptime(episode['original air date'], '%d %b %Y') > datetime.now():
             return 0
-        
+
         return episode['votes']
     
     @property
