@@ -29,6 +29,9 @@ You can also add optional arguments:
 * `--normalize`/`-n` - If you want to normalize data to be in range 0-10, set as default when displaying both ratings and number of votes together because you can barely see ratings without it.
 * `--average`/`-a` - If you want to display a line that will show you the average rating/number of votes for a show.
 
+
+You can also always run the script with `-h` or `--help` flags to get quick info about all available options.
+
 ## Example usage
 Running:
 ```
