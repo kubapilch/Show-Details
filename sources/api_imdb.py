@@ -1,9 +1,7 @@
 from imdb import IMDb
 from sources.files_io import save_data_to_file
 from datetime import datetime
-from sys import stdout
 from collections import OrderedDict
-from pprint import pprint
 import operator
 
 def progress_bar(total, current, description, prefix):
