@@ -65,7 +65,7 @@ class API_IMDb():
         # Check if user wants to save data
         if save:
             # Save reviews to a file
-            save_data_to_file(reviews, "reviews", show['title'].replace(" ", "_"))
+            save_data_to_file(reviews, "reviews", show['title'])
 
         return reviews
 
@@ -116,7 +116,7 @@ class API_IMDb():
         # Check if user wants to save data
         if save:
             # Save votes to a file
-            save_data_to_file(votes, "votes", show['title'].replace(" ", "_"))
+            save_data_to_file(votes, "votes", show['title'])
         
         return votes
 
