@@ -49,3 +49,16 @@ def normalize_data(data):
                 data_noramlized[season] = [new_vote]
 
     return data_noramlized
+
+def prepare_data_for_presentation(data):
+    prepared_data = {}
+
+    # Loop through each season
+    for season, episodes in zip(data.keys(), data.values()):
+
+        # Loop through each episode in a season
+        for episode_number, episode_review in enumerate(episodes):
+            # Save data in a format that will be presented ex. 'S1E13':8.5
+            prepared_data['S{0}E{1}'.format(season, episode_number)] = float(episode_number)
+
+    return prepared_data

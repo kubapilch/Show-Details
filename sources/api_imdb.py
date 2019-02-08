@@ -1,7 +1,7 @@
 from imdb import IMDb
-import files
+from sources.files_io import save_data_to_file
 from datetime import datetime
-import pprint
+from sys import stdout
 
 def progress_bar(total, current, description, prefix):
     """
@@ -12,11 +12,17 @@ def progress_bar(total, current, description, prefix):
     percent = round(float(current) * 100/float(total), 2)
     filled = int(lenght * current // total)
     bar = filled * "#" + "-" * (lenght-filled)
+    
+    # Clear the line before writing
+    print( "\r"+ (" " * 171), end='\r')
 
     print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, description), end="\r")
 
     if total == current:
-        print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, "Completed"), end="\r")
+        # Clear the line before writing
+        print( "\r"+ (" " * 171), end='\r')
+
+        print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, "Completed"))
 
 class API_IMDb():
     def __init__(self, show_id):
@@ -59,7 +65,7 @@ class API_IMDb():
         # Check if user wants to save data
         if save:
             # Save reviews to a file
-            files.save_data_to_file(reviews, "reviews", show['title'].replace(" ", "_"))
+            save_data_to_file(reviews, "reviews", show['title'].replace(" ", "_"))
 
         return reviews
 
@@ -69,7 +75,7 @@ class API_IMDb():
         """
         episode = IMDb().get_movie(episode_id, info=['main', 'plot', 'vote details'])
 
-        # Check if episode has been aired alreary
+        # Check if episode has been aired already
         if not 'plot' in episode.keys() or datetime.strptime(episode['original air date'], '%d %b %Y') > datetime.now():
             return 0
 
@@ -110,7 +116,7 @@ class API_IMDb():
         # Check if user wants to save data
         if save:
             # Save votes to a file
-            files.save_data_to_file(votes, "votes", show['title'].replace(" ", "_"))
+            save_data_to_file(votes, "votes", show['title'].replace(" ", "_"))
         
         return votes
 
@@ -121,7 +127,7 @@ class API_IMDb():
         """
         episode = IMDb().get_movie(episode_id, info=['main', 'plot', 'vote details'])
 
-        # Check if episode has been aired alreary
+        # Check if episode has been aired already
         if not 'plot' in episode.keys() or datetime.strptime(episode['original air date'], '%d %b %Y') > datetime.now():
             return 0
         
@@ -135,5 +141,4 @@ class API_IMDb():
         return self.imdb.get_movie(self.show_id)['kind'] == 'tv series'
 
 
-rev = API_IMDb(2661044).download_reviews(False)
-pprint.pprint(rev)
+# rev = API_IMDb(2661044).download_reviews(False)
