@@ -1,5 +1,6 @@
 import json
 from collections import OrderedDict
+import sys
 
 def save_data_to_file(data, data_type, show_id):
     """
@@ -20,4 +21,4 @@ def load_data_from_file(data_type, show_id):
 
     except FileNotFoundError:
         # File does not exist, ask user if he/she wants to download it
-        raise Exception("File '{0}_{1}.json' does not exist, run the script with -l or -i flag to download the data first".format(data_type, show_id))
+        sys.exit("File '{0}_{1}.json' does not exist, run the script with -l or -i flag to download the data first".format(data_type, show_id))

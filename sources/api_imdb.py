@@ -3,6 +3,7 @@ from sources.files_io import save_data_to_file
 from datetime import datetime
 from collections import OrderedDict
 import operator
+import sys
 
 def progress_bar(total, current, description, prefix):
     """
@@ -29,6 +30,11 @@ class API_IMDb():
     def __init__(self, show_id):
         self.show_id = show_id
         self.imdb = IMDb()
+
+        if not self.is_show:
+            sys.exit("Given ID/link is not a tv show!")
+        
+        self.name = self.imdb.get_movie(self.show_id)['title']
     
     def download_reviews(self, save):
         """
@@ -144,6 +150,3 @@ class API_IMDb():
         Checks if given id is a show
         """
         return self.imdb.get_movie(self.show_id)['kind'] == 'tv series'
-
-
-# rev = API_IMDb(2661044).download_reviews(False)
