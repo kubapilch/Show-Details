@@ -21,7 +21,7 @@ To run the script you have to pass these obligatory arguments:
 
     **Make sure that both link and ID are referring to the entire show, not a single episode** 
 
-* `--data`/`-d` - What time of data you want to display, currently only two types are supported, the number of votes per episode and ratings. You can pass 'r' to display only ratings, 'v' for votes or 'rv' to see both on one graph (can be very interesting sometimes, when death of a single character drastically influences the ratings and number of votes)
+* `--data`/`-d` - What type of data you want to display, currently only two types are supported, the number of votes per episode and ratings. You can pass 'r' to display only ratings, 'v' for votes or 'rv' to see both on one graph (can be very interesting sometimes, when death of a single character drastically influences the ratings and number of votes)
 
 You can also add optional arguments:
 * `--file`/`-f` - If you have previously run the script for a show and marked to save the data, you don't have to run it again. With this flag the script will search for the data in its directory.

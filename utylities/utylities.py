@@ -40,17 +40,21 @@ def normalize_data(data):
     return data_noramlized
 
 def prepare_data_for_presentation(data):
+    """
+    Prepare data for presentation, skip some episodes and change labels to ex. ["S1E14":8.6]
+    """
     prepared_data = OrderedDict()
 
     # Loop through each season
     for season, episodes in enumerate(data.values(), 1):
 
         # Loop through each episode in a season
-        for episode_number, episode_review in enumerate(episodes, 1):
-            if episode_review == 0:
+        for episode_number, episode_data in enumerate(episodes, 1):
+            # If the episode data is 0 skip this episode, ex. episodes hasn't been aired yet or noone has rated it.
+            if episode_data == 0:
                 continue
             
             # Save data in a format that will be presented ex. 'S1E13':8.5
-            prepared_data['S{0}E{1}'.format(season, episode_number)] = float(episode_review)
+            prepared_data['S{0}E{1}'.format(season, episode_number)] = float(episode_data)
 
     return prepared_data
