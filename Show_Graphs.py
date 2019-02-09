@@ -16,53 +16,70 @@ def create_graph(show_id, save, normalize, load_file, data, average, tv_show):
     reviews_raw = None
     votes_raw = None
 
-    # Loading reviews options
-    if load_file and 'r' in data:
-        # Load reviews from file and set data range as 0-11
-        reviews_raw = load_data_from_file('reviews', show_id)
-        data_range = (0, 11)
+    # TODO: Refactor this if
+    # Download both data at once to shorten downloading time
+    if 'r' in data.lower() and 'v' in data.lower() and not load_file:
+        all_data = imdb_api.download_all_data(save)
+
+        reviews_raw = all_data[0]
+        votes_raw = all_data[1]
 
         # Prepare data for presentation
         reviews_prepared = prepare_data_for_presentation(reviews_raw)
+        votes_prepared = prepare_data_for_presentation(votes_raw)
 
         # Set labels
         labels = list(reviews_prepared.keys())
-    elif 'r' in data:
-        # Load reviews from imdb and set data range as 0-11
-        reviews_raw = imdb_api.download_reviews(save)
-        data_range = (0, 11)
+        # Range will be set with normalization
 
-        # Prepare data for presentation
-        reviews_prepared = prepare_data_for_presentation(reviews_raw)
+    else:
+        # Loading reviews options
+        if load_file and 'r' in data:
+            # Load reviews from file and set data range as 0-11
+            reviews_raw = load_data_from_file('reviews', show_id)
+            data_range = (0, 11)
 
-        # Set labels
-        labels = list(reviews_prepared.keys())
+            # Prepare data for presentation
+            reviews_prepared = prepare_data_for_presentation(reviews_raw)
 
-    # Loading number of votes options
-    if load_file and 'v' in data:
-        # Load votes from file and set data range as 0-max value
-        votes_raw = load_data_from_file('votes', show_id)
-        
-        # Prepare votes for presentation
-        votes_prepared = prepare_data_for_presentation(votes_raw)
-        
-        # Set labels
-        labels = list(votes_prepared.keys())
-        
-        # Set data range as 0-max value + 10% of max value
-        data_range = (0, max(votes_prepared.values()) + (0.1*max(votes_prepared.values())))
-    elif 'v' in data:
-        # Load votes from file and set data range as 0-max value
-        votes_raw = imdb_api.download_number_of_votes(save)
-        
-        # Prepare votes for presentation
-        votes_prepared = prepare_data_for_presentation(votes_raw)
-        
-        # Set labels
-        labels = list(votes_prepared.keys())
+            # Set labels
+            labels = list(reviews_prepared.keys())
+        elif 'r' in data:
+            # Load reviews from imdb and set data range as 0-11
+            reviews_raw = imdb_api.download_reviews(save)
+            data_range = (0, 11)
 
-        # Set data range as 0-max value + 10% of max value
-        data_range = (0, max(votes_prepared.values()) + (0.1*max(votes_prepared.values())))
+            # Prepare data for presentation
+            reviews_prepared = prepare_data_for_presentation(reviews_raw)
+
+            # Set labels
+            labels = list(reviews_prepared.keys())
+
+        # Loading number of votes options
+        if load_file and 'v' in data:
+            # Load votes from file and set data range as 0-max value
+            votes_raw = load_data_from_file('votes', show_id)
+            
+            # Prepare votes for presentation
+            votes_prepared = prepare_data_for_presentation(votes_raw)
+            
+            # Set labels
+            labels = list(votes_prepared.keys())
+            
+            # Set data range as 0-max value + 10% of max value
+            data_range = (0, max(votes_prepared.values()) + (0.1*max(votes_prepared.values())))
+        elif 'v' in data:
+            # Load votes from file and set data range as 0-max value
+            votes_raw = imdb_api.download_number_of_votes(save)
+            
+            # Prepare votes for presentation
+            votes_prepared = prepare_data_for_presentation(votes_raw)
+            
+            # Set labels
+            labels = list(votes_prepared.keys())
+
+            # Set data range as 0-max value + 10% of max value
+            data_range = (0, max(votes_prepared.values()) + (0.1*max(votes_prepared.values())))
 
     # Normalize data if needed and set new data range
     if normalize and not votes_raw is None:
@@ -71,7 +88,8 @@ def create_graph(show_id, save, normalize, load_file, data, average, tv_show):
     
     # Create graph object
     p = figure(x_range=labels, y_range=data_range, sizing_mode='stretch_both', title=imdb_api.name)
-    
+    print('Rendering the graph..')
+
     # Title location
     p.title_location = 'above'
 
@@ -131,15 +149,18 @@ def parse_arguments():
     parser.add_argument('-a', '--average', action='store_true', default=False, help='Draw an average value line on a graph.')
     
     # Parse arguments
+    print('Parsing arguments..')
     args = parser.parse_args()
 
     # Get show id
     if args.link:
+        print('Retriving ID from a link..')
         show_id = retrive_id_from_link(args.link)
     else:
         show_id = args.id
     
     # Get the tv show, also check if it is a tv show
+    print('Checking if ID is valid and refers to a tv series..')
     tv_show = API_IMDb(show_id)
 
     # Ask user if given ID is correct before starting downloading data from IMDb

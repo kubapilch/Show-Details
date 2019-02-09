@@ -4,6 +4,7 @@ from datetime import datetime
 from collections import OrderedDict
 import operator
 import sys
+from collections import namedtuple
 
 def progress_bar(total, current, description, prefix):
     """
@@ -148,7 +149,73 @@ class API_IMDb():
             return 0
 
         return episode['votes']
-    
+
+    def download_all_data(self, save):
+        """
+        Downloads numbers of votes and ratings together to shorten the downloading time and improve performance
+        """
+        # Get the entire show seasons and episodes, retrives dictionary of dictionaries
+        show = self.tv_show
+        
+        # Sort dictionary by season and create OrderedDict out of it
+        serie = OrderedDict(sorted(show['episodes'].items(), key=operator.itemgetter(0)))
+
+        votes = OrderedDict()
+        reviews = OrderedDict()
+
+        current_episode = 0
+
+        # Iterate through every season
+        for season, episodes in serie.items():
+            
+            # Iterate through every episode in a season
+            for episode_number, episodeObject in episodes.items():
+                
+                current_episode += 1
+                progress_bar(show['number of episodes'], current_episode, "Now downloading Season {0} Episode {1}".format(season, episode_number), "Downloading data")
+
+                # Get episode ID
+                episde_id = episodeObject.getID()
+                
+                # Download data for episode
+                episode_data = self._download_all_data_for_episode(episde_id)
+
+                # Make sure that the list of votes for this season is created and append that list with episode votes
+                if "Season{0}".format(season) in votes.keys():
+                    votes["Season{0}".format(season)].append(episode_data.votes)
+                else:
+                    votes["Season{0}".format(season)] = [episode_data.votes]
+                
+                # Make sure that the list of ratings for this season is created and append that list with episode review
+                if "Season{0}".format(season) in reviews.keys():
+                    reviews["Season{0}".format(season)].append(episode_data.ratings)
+                else:
+                    reviews["Season{0}".format(season)] = [episode_data.ratings]
+        
+        if save:
+            # Save votes to a file
+            save_data_to_file(votes, "votes", self.show_id)
+
+            # Save ratings to a file
+            save_data_to_file(reviews, "reviews", self.show_id)
+        
+        return (reviews, votes)
+
+    def _download_all_data_for_episode(self, episode_id):
+        """
+        Downloads ratings and number of votes for one episode and returns tuple (ratings, number of votes)
+        """
+        episode = IMDb().get_movie(episode_id, info=['main', 'plot', 'vote details'])
+
+        # Create named tuple for episode data
+        data_episode = namedtuple('data', 'ratings votes')
+
+        # Check if episode has been aired already
+        if not 'plot' in episode.keys() or datetime.strptime(episode['original air date'], '%d %b %Y') > datetime.now():
+            return data_episode(ratings=0, votes=0)
+
+        return data_episode(ratings=episode['arithmetic mean'], votes=episode['votes'])
+
     @property
     def is_show(self):
         """
