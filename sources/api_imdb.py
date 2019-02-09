@@ -30,11 +30,16 @@ class API_IMDb():
     def __init__(self, show_id):
         self.show_id = show_id
         self.imdb = IMDb()
-
+        
+        # Check if given id refers to a show
         if not self.is_show:
             sys.exit("Given ID/link is not a tv show!")
         
-        self.name = self.imdb.get_movie(self.show_id)['title']
+        # Create movie object out of given id
+        self.tv_show = self.imdb.get_movie(show_id, info=['episodes', 'main'])
+        
+        # Get the title of a show
+        self.name = self.tv_show['title']
     
     def download_reviews(self, save):
         """
@@ -42,8 +47,8 @@ class API_IMDb():
         """
 
         # Get the entire show seasons and episodes, retrives dictionary of dictionaries
-        show = self.imdb.get_movie(self.show_id, info=['episodes', 'main'])
-        
+        show = self.tv_show
+
         # Sort dictionary by season and create OrderedDict out of it
         serie = OrderedDict(sorted(show['episodes'].items(), key=operator.itemgetter(0)))
         
@@ -95,7 +100,7 @@ class API_IMDb():
         Downloads number of votes for a show and returns a dictionary -> {Season1:[]}
         """
         # Get the entire show seasons and episodes, retrives dictionary of dictionaries
-        show = self.imdb.get_movie(self.show_id, info=['episodes', 'main']) 
+        show = self.tv_show
         
         # Sort dictionary by season and create OrderedDict out of it
         serie = OrderedDict(sorted(show['episodes'].items(), key=operator.itemgetter(0)))

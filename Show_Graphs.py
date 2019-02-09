@@ -6,11 +6,13 @@ from collections import OrderedDict
 import argparse
 import sys
 
-def create_graph(show_id, save, normalize, load_file, data, average):
+def create_graph(show_id, save, normalize, load_file, data, average, tv_show):
     """
     Creates graph from given arguments
     """
-    imdb_api = API_IMDb(show_id=show_id)
+    # Passing it as an argument drastically shorten the run time
+    imdb_api = tv_show
+    
     reviews_raw = None
     votes_raw = None
 
@@ -143,23 +145,23 @@ def parse_arguments():
     # Ask user if given ID is correct before starting downloading data from IMDb
     if not args.file:
         is_ok = input('ID refers to {0}, do you want to continue? (Y/N): '.format(tv_show.name))
-    
-        if is_ok.upper() == "N":
-            print("Try again with correct ID/link.")
+
+        if not is_ok.upper() == "Y":
+            print("Try again with different ID/link.")
             return
-    
+
     # Make sure that dataset is correctly choosen
     if not 'r' in args.data and not 'v' in args.data:
         print('Wrong data arguments, pass "r", "v" or "rv". For more info run script with -h flag')
         return
-    
+
     # Check if user wants to display both reviews and votes together and if yes normalize data as default
     if 'r' in args.data and 'v' in args.data:
         normalize = True
     else:
         normalize = args.normalize
 
-    create_graph(show_id=show_id, save=args.save, normalize=normalize, load_file=args.file, data=args.data, average=args.average)
+    create_graph(show_id=show_id, save=args.save, normalize=normalize, load_file=args.file, data=args.data, average=args.average, tv_show=tv_show)
 
 if __name__ == '__main__':
     parse_arguments()
