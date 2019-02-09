@@ -5,6 +5,7 @@ It is a simple script/program that lets you create graphs from ratings and the n
 Currently the only way to install my program/script is manually downloading it from github, support for `pip` will be added.
 
 #### Requirements
+* Python 3.x
 * [Bokeh](https://bokeh.pydata.org/en/latest/) library 
 ```
 pip install bokeh

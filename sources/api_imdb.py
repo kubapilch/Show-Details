@@ -19,12 +19,15 @@ def progress_bar(total, current, description, prefix):
     # Clear the line before writing
     print( "\r"+ (" " * (lenght+71)), end='\r')
 
+    # Print progress bar
     print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, description), end="\r")
 
+    # Downloading is done
     if total == current:
         # Clear the line before writing
         print( "\r"+ (" " * (lenght+71)), end='\r')
-
+        
+        # Print progress bar with cmplete message
         print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, "Completed"))
 
 class API_IMDb():
