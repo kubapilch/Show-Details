@@ -5,3 +5,7 @@
 settings.json
 *.json
 *.html
+/build/*
+/dist/*
+*.spec
+/__pycache__/*
