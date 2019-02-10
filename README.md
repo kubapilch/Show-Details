@@ -77,4 +77,4 @@ You can click on a legend to 'mute' or 'unmute' particular lines.
     * ~~If only ratings/votes are saved locally, but both are needed - now you have to re-run the script to download only one data to avoid downloading both.~~
 * Compare  mode that will allow user to overlap ratings from two different shows or two seasons from one show.
 * Installation via `pip`
-* Release .exe file of the script
+* ~~Release .exe file of the script~~
