@@ -57,10 +57,10 @@ You can click on a legend to 'mute' or 'unmute' particular lines.
 
 ## Future plans
 * Adding filtering seasons with `-s` flag
-* Refactoring code to be faster and more efficient
+* ~~Refactoring code to be faster and more efficient~~
 * Support for couple sites/sources
 * Better exceptions handling, including:
-    * If only ratings/votes are saved locally, but both are needed - now you have to re-run the script to download only one data to avoid downloading both.
-    * More user communication instead of shutting down the script with error message ex. 'Invalid link!'
+    * ~~If only ratings/votes are saved locally, but both are needed - now you have to re-run the script to download only one data to avoid downloading both.~~
 * Compare  mode that will allow user to overlap ratings from two different shows or two seasons from one show.
-*  Installation via `pip`
+* Installation via `pip`
+* Release .exe file of the script

@@ -21,4 +21,11 @@ def load_data_from_file(data_type, show_id):
 
     except FileNotFoundError:
         # File does not exist, ask user if he/she wants to download it
-        sys.exit("File '{0}_{1}.json' does not exist, run the script with -l or -i flag to download the data first".format(data_type, show_id))
+        want_download = input("File '{0}_{1}.json' does not exist. Do you want to download it? (Y/N): ".format(data_type, show_id))
+        
+        # If yes return None and handle it in Show_graphs.py
+        if want_download.upper() == "Y":
+            return None
+        
+        # If not exit the program
+        sys.exit()

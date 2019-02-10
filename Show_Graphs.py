@@ -6,13 +6,14 @@ from collections import OrderedDict
 import argparse
 import sys
 
-def create_graph(show_id, save, normalize, load_file, data, average, tv_show):
+def create_graph(show_id, save, normalize, load_file, data, average):
     """
     Creates graph from given arguments
     """
-    # Passing it as an argument drastically shorten the run time
-    imdb_api = tv_show
-    
+    # Get the tv show, also check if it is a tv show
+    print('Checking if ID is valid and refers to a tv series..')
+    imdb_api = API_IMDb(show_id)
+
     reviews_raw = None
     votes_raw = None
 
@@ -35,8 +36,13 @@ def create_graph(show_id, save, normalize, load_file, data, average, tv_show):
     else:
         # Loading reviews options
         if load_file and 'r' in data:
-            # Load reviews from file and set data range as 0-11
+            # Load reviews from file, can return None if file doesn not exist and user wants to download the data
             reviews_raw = load_data_from_file('reviews', show_id)
+            
+            # Handle None
+            if reviews_raw is None:
+                reviews_raw = imdb_api.download_reviews(True)
+            
             data_range = (0, 11)
 
             # Prepare data for presentation
@@ -57,9 +63,13 @@ def create_graph(show_id, save, normalize, load_file, data, average, tv_show):
 
         # Loading number of votes options
         if load_file and 'v' in data:
-            # Load votes from file and set data range as 0-max value
+            # Load votes from file, can return None if file doesn not exist and user wants to download the data
             votes_raw = load_data_from_file('votes', show_id)
             
+            # Handle None
+            if votes_raw is None:
+                votes_raw = imdb_api.download_number_of_votes(True)
+
             # Prepare votes for presentation
             votes_prepared = prepare_data_for_presentation(votes_raw)
             
@@ -158,18 +168,6 @@ def parse_arguments():
         show_id = retrive_id_from_link(args.link)
     else:
         show_id = args.id
-    
-    # Get the tv show, also check if it is a tv show
-    print('Checking if ID is valid and refers to a tv series..')
-    tv_show = API_IMDb(show_id)
-
-    # Ask user if given ID is correct before starting downloading data from IMDb
-    if not args.file:
-        is_ok = input('ID refers to {0}, do you want to continue? (Y/N): '.format(tv_show.name))
-
-        if not is_ok.upper() == "Y":
-            print("Try again with different ID/link.")
-            return
 
     # Make sure that dataset is correctly choosen
     if not 'r' in args.data and not 'v' in args.data:
@@ -182,7 +180,7 @@ def parse_arguments():
     else:
         normalize = args.normalize
 
-    create_graph(show_id=show_id, save=args.save, normalize=normalize, load_file=args.file, data=args.data, average=args.average, tv_show=tv_show)
+    create_graph(show_id=show_id, save=args.save, normalize=normalize, load_file=args.file, data=args.data, average=args.average)
 
 if __name__ == '__main__':
     parse_arguments()

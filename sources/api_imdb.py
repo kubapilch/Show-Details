@@ -6,29 +6,31 @@ import operator
 import sys
 from collections import namedtuple
 
-def progress_bar(total, current, description, prefix):
+def progress_bar(total, current, description, prefix, show_name):
     """
     Creates progress bar with description
     """
-    lenght = 100 # TODO: Make smaller progress bar so it fits smaller terminal
+    lenght = 50
     
     percent = round(float(current) * 100/float(total), 2)
     filled = int(lenght * current // total)
     bar = filled * "#" + "-" * (lenght-filled)
     
+    done_progress_bar = "\r{0} for {4}: |{1}| {2}% [{3}]".format(prefix, bar, percent, description, show_name)
+
     # Clear the line before writing
-    print( "\r"+ (" " * (lenght+71)), end='\r')
+    print( "\r"+ (" " * (len(done_progress_bar) + 2)), end='\r')
 
     # Print progress bar
-    print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, description), end="\r")
+    print(done_progress_bar, end="\r")
 
     # Downloading is done
     if total == current:
         # Clear the line before writing
-        print( "\r"+ (" " * (lenght+71)), end='\r')
+        print( "\r"+ (" " * (len(done_progress_bar) + 2)), end='\r')
         
         # Print progress bar with cmplete message
-        print("\r{0}: |{1}| {2}% [{3}]".format(prefix, bar, percent, "Completed"))
+        print("\r{0} for {4}: |{1}| {2}% [{3}]".format(prefix, bar, percent, "Completed", show_name))
 
 class API_IMDb():
     def __init__(self, show_id):
@@ -49,6 +51,8 @@ class API_IMDb():
         """
         Downloads reviews for a show and returns a dictionary -> {Season1:[]}
         """
+        # Make sure it is a correct show
+        self.ask_if_correct_show()
 
         # Get the entire show seasons and episodes, retrives dictionary of dictionaries
         show = self.tv_show
@@ -66,7 +70,7 @@ class API_IMDb():
             for episode_number, episodeObject in zip(episodes.keys(), episodes.values()):
                 
                 current_episode += 1
-                progress_bar(show['number of episodes'], current_episode, "Now downloading Season {0} Episode {1}".format(season, episode_number), "Downloading reviews")
+                progress_bar(show['number of episodes'], current_episode, "Now downloading Season {0} Episode {1}".format(season, episode_number), "Downloading reviews", self.name)
 
                 # Get episode ID
                 episde_id = episodeObject.getID()
@@ -103,6 +107,9 @@ class API_IMDb():
         """
         Downloads number of votes for a show and returns a dictionary -> {Season1:[]}
         """
+        # Make sure it is a correct show
+        self.ask_if_correct_show()
+        
         # Get the entire show seasons and episodes, retrives dictionary of dictionaries
         show = self.tv_show
         
@@ -119,7 +126,7 @@ class API_IMDb():
             for episode_number, episodeObject in zip(episodes.keys(), episodes.values()):
                 
                 current_episode += 1
-                progress_bar(show['number of episodes'], current_episode, "Now downloading Season {0} Episode {1}".format(season, episode_number), "Downloading votes")
+                progress_bar(show['number of episodes'], current_episode, "Now downloading Season {0} Episode {1}".format(season, episode_number), "Downloading votes", self.name)
 
                 # Get episode ID
                 episde_id = episodeObject.getID()
@@ -157,6 +164,9 @@ class API_IMDb():
         """
         Downloads numbers of votes and ratings together to shorten the downloading time and improve performance
         """
+        # Make sure it is a correct show
+        self.ask_if_correct_show()
+        
         # Get the entire show seasons and episodes, retrives dictionary of dictionaries
         show = self.tv_show
         
@@ -175,11 +185,11 @@ class API_IMDb():
             for episode_number, episodeObject in episodes.items():
                 
                 current_episode += 1
-                progress_bar(show['number of episodes'], current_episode, "Now downloading Season {0} Episode {1}".format(season, episode_number), "Downloading data")
+                progress_bar(show['number of episodes'], current_episode, "Now downloading Season {0} Episode {1}".format(season, episode_number), "Downloading data", self.name)
 
                 # Get episode ID
                 episde_id = episodeObject.getID()
-                
+
                 # Download data for episode
                 episode_data = self._download_all_data_for_episode(episde_id)
 
@@ -225,3 +235,13 @@ class API_IMDb():
         Checks if given id is a show
         """
         return self.imdb.get_movie(self.show_id)['kind'] == 'tv series'
+    
+    def ask_if_correct_show(self):
+        """
+        Ask user if given ID refers to correct tv serie before starting downloading data from IMDb
+        """
+        is_ok = input('ID refers to {0}, do you want to continue? (Y/N): '.format(self.name))
+
+        if not is_ok.upper() == "Y":
+            print("Try again with different ID/link.")
+            sys.exit()
