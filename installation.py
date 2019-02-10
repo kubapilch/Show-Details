@@ -5,4 +5,4 @@ os.system('pip install bokeh')
 
 os.system('pip install imdbpy')
 
-print('\n\nInstallation complete!')
+print('\n------------Installation complete!------------')
