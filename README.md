@@ -57,7 +57,7 @@ You can click on a legend to 'mute' or 'unmute' particular lines.
 * Improved skills with `bokeh` library
 * How to create text-based progress bar
 
-## Future plans
+## Future plans/TODO
 * ~~Adding filtering seasons with `--seasons` flag~~
 * ~~Refactoring code to be faster and more efficient~~
 * Support for couple sites/sources
