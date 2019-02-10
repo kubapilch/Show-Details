@@ -15,13 +15,13 @@ def retrive_id_from_link(link):
     for element in elements[2:]:
         if "tt" in element:
             # Id found retrive it and break the loop
-            id = element[2:]
+            shwo_id = element[2:]
             break
     else:
         # Didn't find the id
         sys.exit("Invalid link!")
 
-    return id
+    return shwo_id
 
 
 def normalize_data(data):

@@ -4,7 +4,6 @@ from sources.api_imdb import API_IMDb
 from utylities.utylities import prepare_data_for_presentation, normalize_data, retrive_id_from_link
 from collections import OrderedDict
 import argparse
-import sys
 
 def create_graph(show_id, save, normalize, load_file, data, average):
     """
@@ -65,26 +64,26 @@ def create_graph(show_id, save, normalize, load_file, data, average):
         if load_file and 'v' in data:
             # Load votes from file, can return None if file doesn not exist and user wants to download the data
             votes_raw = load_data_from_file('votes', show_id)
-            
+
             # Handle None
             if votes_raw is None:
                 votes_raw = imdb_api.download_number_of_votes(True)
 
             # Prepare votes for presentation
             votes_prepared = prepare_data_for_presentation(votes_raw)
-            
+
             # Set labels
             labels = list(votes_prepared.keys())
-            
+
             # Set data range as 0-max value + 10% of max value
             data_range = (0, max(votes_prepared.values()) + (0.1*max(votes_prepared.values())))
         elif 'v' in data:
             # Load votes from file and set data range as 0-max value
             votes_raw = imdb_api.download_number_of_votes(save)
-            
+
             # Prepare votes for presentation
             votes_prepared = prepare_data_for_presentation(votes_raw)
-            
+
             # Set labels
             labels = list(votes_prepared.keys())
 
