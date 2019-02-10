@@ -39,7 +39,7 @@ def normalize_data(data):
 
     return data_noramlized
 
-def prepare_data_for_presentation(data):
+def prepare_data_for_presentation(data, seasons):
     """
     Prepare data for presentation, skip some episodes and change labels to ex. ["S1E14":8.6]
     """
@@ -47,6 +47,10 @@ def prepare_data_for_presentation(data):
 
     # Loop through each season
     for season, episodes in enumerate(data.values(), 1):
+
+        # Filter seasons
+        if not season in seasons:
+            continue
 
         # Loop through each episode in a season
         for episode_number, episode_data in enumerate(episodes, 1):
@@ -58,3 +62,29 @@ def prepare_data_for_presentation(data):
             prepared_data['S{0}E{1}'.format(season, episode_number)] = float(episode_data)
 
     return prepared_data
+
+def retrive_seasons(data):
+    """
+    Parse filtering data and retrives seasons, return list of seasons
+    """
+    # Handle all seasons later in Show_Graphs.py
+    if data is None:
+        return None
+
+    if not ':' in data:
+        sys.exit('Wrong filtering format, --seasons START:END, if you want to show only one season set start and end as the same value')
+
+    try:
+        start = int(data.split(':')[0])
+        end = int(data.split(':')[1])
+    except:
+        sys.exit('Wrong filtering format, --seasons START:END, if you want to show only one season set start and end as the same value')
+
+    if start > end or start == 0 or end > 100:
+        sys.exit('Wrong filtering format, --seasons START:END, if you want to show only one season set start and end as the same value')
+    
+    # Only one season
+    if start == end:
+        return [start]
+
+    return list(range(start, end + 1))

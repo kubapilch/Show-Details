@@ -245,3 +245,10 @@ class API_IMDb():
         if not is_ok.upper() == "Y":
             print("Try again with different ID/link.")
             sys.exit()
+
+    @property
+    def seasons(self):
+        """
+        Retrive seasons and return them
+        """
+        return list(self.tv_show['episodes'].keys())

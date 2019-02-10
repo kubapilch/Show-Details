@@ -1,17 +1,21 @@
 from bokeh.plotting import figure, output_file, show
 from sources.files_io import load_data_from_file
 from sources.api_imdb import API_IMDb
-from utylities.utylities import prepare_data_for_presentation, normalize_data, retrive_id_from_link
+from utylities.utylities import prepare_data_for_presentation, normalize_data, retrive_id_from_link, retrive_seasons
 from collections import OrderedDict
 import argparse
 
-def create_graph(show_id, save, normalize, load_file, data, average):
+def create_graph(show_id, save, normalize, load_file, data, average, seasons):
     """
     Creates graph from given arguments
     """
     # Get the tv show, also check if it is a tv show
     print('Checking if ID is valid and refers to a tv series..')
     imdb_api = API_IMDb(show_id)
+    
+    # If seasons not specify set as all
+    if seasons is None:
+        seasons = imdb_api.seasons
 
     reviews_raw = None
     votes_raw = None
@@ -25,8 +29,8 @@ def create_graph(show_id, save, normalize, load_file, data, average):
         votes_raw = all_data[1]
 
         # Prepare data for presentation
-        reviews_prepared = prepare_data_for_presentation(reviews_raw)
-        votes_prepared = prepare_data_for_presentation(votes_raw)
+        reviews_prepared = prepare_data_for_presentation(reviews_raw, seasons)
+        votes_prepared = prepare_data_for_presentation(votes_raw, seasons)
 
         # Set labels
         labels = list(reviews_prepared.keys())
@@ -45,7 +49,7 @@ def create_graph(show_id, save, normalize, load_file, data, average):
             data_range = (0, 11)
 
             # Prepare data for presentation
-            reviews_prepared = prepare_data_for_presentation(reviews_raw)
+            reviews_prepared = prepare_data_for_presentation(reviews_raw, seasons)
 
             # Set labels
             labels = list(reviews_prepared.keys())
@@ -55,7 +59,7 @@ def create_graph(show_id, save, normalize, load_file, data, average):
             data_range = (0, 11)
 
             # Prepare data for presentation
-            reviews_prepared = prepare_data_for_presentation(reviews_raw)
+            reviews_prepared = prepare_data_for_presentation(reviews_raw, seasons)
 
             # Set labels
             labels = list(reviews_prepared.keys())
@@ -70,7 +74,7 @@ def create_graph(show_id, save, normalize, load_file, data, average):
                 votes_raw = imdb_api.download_number_of_votes(True)
 
             # Prepare votes for presentation
-            votes_prepared = prepare_data_for_presentation(votes_raw)
+            votes_prepared = prepare_data_for_presentation(votes_raw, seasons)
 
             # Set labels
             labels = list(votes_prepared.keys())
@@ -82,7 +86,7 @@ def create_graph(show_id, save, normalize, load_file, data, average):
             votes_raw = imdb_api.download_number_of_votes(save)
 
             # Prepare votes for presentation
-            votes_prepared = prepare_data_for_presentation(votes_raw)
+            votes_prepared = prepare_data_for_presentation(votes_raw, seasons)
 
             # Set labels
             labels = list(votes_prepared.keys())
@@ -156,7 +160,8 @@ def parse_arguments():
     parser.add_argument('-s', '--save', action='store_true', default=False, help='Save data to file for future use, recommended to avoid re-downloading data unnecesarly.')
     parser.add_argument('-n', '--normalize', help='Normalize data to be in range 0-10, easier to read when displaying number of votes and reviews together. When displaying both graphs together set True as default.', action='store_true', default=False)
     parser.add_argument('-a', '--average', action='store_true', default=False, help='Draw an average value line on a graph.')
-    
+    parser.add_argument('--seasons', default=None, help='Specify what seasons ypu want to display, pass START:END, where both start and end are integers')
+
     # Parse arguments
     print('Parsing arguments..')
     args = parser.parse_args()
@@ -179,7 +184,10 @@ def parse_arguments():
     else:
         normalize = args.normalize
 
-    create_graph(show_id=show_id, save=args.save, normalize=normalize, load_file=args.file, data=args.data, average=args.average)
+    # Get seasons
+    seasons = retrive_seasons(args.seasons)
+
+    create_graph(show_id=show_id, save=args.save, normalize=normalize, load_file=args.file, data=args.data, average=args.average, seasons=seasons)
 
 if __name__ == '__main__':
     parse_arguments()

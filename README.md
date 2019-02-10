@@ -29,6 +29,8 @@ You can also add optional arguments:
 * `--save`/`-s` - With this flag you can save downloaded data for future use.
 * `--normalize`/`-n` - If you want to normalize data to be in range 0-10, set as default when displaying both ratings and number of votes together because you can barely see ratings without it.
 * `--average`/`-a` - If you want to display a line that will show you the average rating/number of votes for a show.
+* `--seasons START:END` - You can filter particular seasons from a tv series. START is starting seasons and END is the last seasons that you want to show, every season in that range will be displayed. If you want to show only one season assign the same value to both variables. 
+NOTE: This won't prevent the script from downloading data for other seasons, it will just filter displayed data.
 
 
 You can also always run the script with `-h` or `--help` flags to get quick info about all available options.
@@ -56,7 +58,7 @@ You can click on a legend to 'mute' or 'unmute' particular lines.
 * How to create text-based progress bar
 
 ## Future plans
-* Adding filtering seasons with `-s` flag
+* ~~Adding filtering seasons with `--seasons` flag~~
 * ~~Refactoring code to be faster and more efficient~~
 * Support for couple sites/sources
 * Better exceptions handling, including:
