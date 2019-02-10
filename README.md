@@ -4,6 +4,8 @@ It is a simple script/program that lets you create graphs from ratings and the n
 ## Installation
 Currently the only way to install my program/script is manually downloading it from github, support for `pip` will be added.
 
+### Installing with python
+---
 #### Requirements
 * Python 3.x
 * [Bokeh](https://bokeh.pydata.org/en/latest/) library 
@@ -14,6 +16,16 @@ pip install bokeh
 ```
 pip install imdbpy
 ```
+
+Or you can install all required packages using `installation.py`
+```
+python installation.py
+```
+
+### Installing executable file
+---
+You can also download the executable file from 'release' section of this repository. It works the same way as my script, including arguments but it doesn't require installed python or any libraries.
+
 
 ## Usage
 To run the script you have to pass these obligatory arguments:
