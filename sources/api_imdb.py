@@ -38,6 +38,7 @@ class API_IMDb():
         self.imdb = IMDb()
         
         # Check if given id refers to a show
+        print('Checking if ID is valid and refers to a tv series..')
         if not self.is_show:
             sys.exit("Given ID/link is not a tv show!")
         
@@ -87,7 +88,10 @@ class API_IMDb():
         # Check if user wants to save data
         if save:
             # Save reviews to a file
-            save_data_to_file(reviews, "reviews", self.show_id)
+            save_data_to_file(reviews, "reviews", self.show_id, self.name)
+
+        # Add tv series title
+        reviews = {'show_name':self.name, 'data':reviews}
 
         return reviews
 
@@ -143,8 +147,11 @@ class API_IMDb():
         # Check if user wants to save data
         if save:
             # Save votes to a file
-            save_data_to_file(votes, "votes", self.show_id)
+            save_data_to_file(votes, "votes", self.show_id, self.name)
         
+        # Add tv series title
+        votes = {'show_name':self.name, 'data':votes}
+
         return votes
 
 
@@ -207,11 +214,15 @@ class API_IMDb():
         
         if save:
             # Save votes to a file
-            save_data_to_file(votes, "votes", self.show_id)
+            save_data_to_file(votes, "votes", self.show_id, self.name)
 
             # Save ratings to a file
-            save_data_to_file(reviews, "reviews", self.show_id)
+            save_data_to_file(reviews, "reviews", self.show_id, self.name)
         
+        # Add tv series title
+        reviews = {'show_name':self.name, 'data':reviews}
+        votes = {'show_name':self.name, 'data':votes}
+
         return (reviews, votes)
 
     def _download_all_data_for_episode(self, episode_id):

@@ -2,7 +2,7 @@
 It is a simple script/program that lets you create graphs from ratings and the number of votes for a specific tv series. Currently the only supported site is IMDb, however I build it with scalability in mind and it is very easy to get a new source of data.
 
 ## Installation
-Currently the only way to install my program/script is manually downloading it from github, support for `pip` will be added.
+Currently the only way to install my program/script is manually downloading it from github.
 
 ### Installing with python
 ---
@@ -68,6 +68,7 @@ You can click on a legend to 'mute' or 'unmute' particular lines.
 * How to write unit tests with `unittest`
 * Improved skills with `bokeh` library
 * How to create text-based progress bar
+* How to create .exe files with `pyinstaller`
 
 ## Future plans/TODO
 * ~~Adding filtering seasons with `--seasons` flag~~
@@ -75,6 +76,6 @@ You can click on a legend to 'mute' or 'unmute' particular lines.
 * Support for couple sites/sources
 * Better exceptions handling, including:
     * ~~If only ratings/votes are saved locally, but both are needed - now you have to re-run the script to download only one data to avoid downloading both.~~
-* Compare  mode that will allow user to overlap ratings from two different shows or two seasons from one show.
+* ~~Option to create graphs without internet connection (only from files)~~
 * Installation via `pip`
 * ~~Release .exe file of the script~~

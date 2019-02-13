@@ -5,102 +5,110 @@ from utylities.utylities import prepare_data_for_presentation, normalize_data, r
 from collections import OrderedDict
 import argparse
 
-def create_graph(show_id, save, normalize, load_file, data, average, seasons):
+def get_data_from_file(show_id, save, data):
+    """
+    Gets raw data from file and handle lack of the file and downloading data if needed
+    """
+    reviews_raw = None
+    votes_raw = None
+
+    if 'r' in data.lower() and 'v' in data.lower():
+        # Try to load data from files
+        reviews_raw = load_data_from_file('reviews', show_id)
+        votes_raw = load_data_from_file('votes', show_id)
+
+        # Check if data was succesfuly loaded, if not download it
+        if reviews_raw is None or votes_raw is None:
+            # API
+            imdb = API_IMDb(show_id)
+
+            # Download both
+            data_raw = imdb.download_all_data(save)
+
+            reviews_raw = data_raw[0]
+            votes_raw = data_raw[1]
+    elif 'r' in data.lower():
+        # Try to load data from files
+        reviews_raw = load_data_from_file('reviews', show_id)
+
+        if reviews_raw is None:
+            # API
+            imdb = API_IMDb(show_id)
+            
+            reviews_raw = imdb.download_reviews(save)
+    elif 'v' in data.lower():
+        votes_raw = load_data_from_file('votes', show_id)
+
+        if votes_raw is None:
+            # API
+            imdb = API_IMDb(show_id)
+            
+            votes_raw = imdb.download_number_of_votes(save)
+    
+    return (reviews_raw, votes_raw)
+
+def get_data_from_internet(show_id, save, data):
+    """
+    Gets raw data from imdb API
+    """
+    imdb = API_IMDb(show_id)
+    
+    reviews_raw = None
+    votes_raw = None
+    
+    if 'r' in data.lower() and 'v' in data.lower():
+        data_raw = imdb.download_all_data(save)
+
+        reviews_raw = data_raw[0]
+        votes_raw = data_raw[1]
+    elif 'r' in data.lower():
+        reviews_raw = imdb.download_reviews(save)
+    elif 'v' in data.lower():
+        votes_raw = imdb.download_number_of_votes(save)
+    
+    return (reviews_raw, votes_raw)
+
+def create_graph2(show_id, save, normalize, load_file, data, average, seasons):
     """
     Creates graph from given arguments
     """
-    # Get the tv show, also check if it is a tv show
-    print('Checking if ID is valid and refers to a tv series..')
-    imdb_api = API_IMDb(show_id)
-    
     # If seasons not specify set as all
     if seasons is None:
-        seasons = imdb_api.seasons
+        seasons = range(200)
 
     reviews_raw = None
     votes_raw = None
 
-    # TODO: Refactor this if
-    # Download both data at once to shorten downloading time
-    if 'r' in data.lower() and 'v' in data.lower() and not load_file:
-        all_data = imdb_api.download_all_data(save)
+    # Get raw data depending on user choice, from files or imdb
+    data_raw = get_data_from_file(show_id, save, data) if load_file else get_data_from_internet(show_id, save, data)
 
-        reviews_raw = all_data[0]
-        votes_raw = all_data[1]
+    # Set data
+    reviews_raw = data_raw[0].get('data', None)
+    votes_raw = data_raw[1].get('data', None)
 
-        # Prepare data for presentation
-        reviews_prepared = prepare_data_for_presentation(reviews_raw, seasons)
-        votes_prepared = prepare_data_for_presentation(votes_raw, seasons)
+    # Try to get the title of the show from reviews, if can't try from votes and set as show id if can't
+    show_name = data_raw[0].get('show_name', data_raw[1].get('show_name', show_id))
 
-        # Set labels
-        labels = list(reviews_prepared.keys())
-        # Range will be set with normalization
+    # Prepare data for presentation
+    reviews_prepared = prepare_data_for_presentation(reviews_raw, seasons)
+    votes_prepared = prepare_data_for_presentation(votes_raw, seasons)
 
-    else:
-        # Loading reviews options
-        if load_file and 'r' in data:
-            # Load reviews from file, can return None if file doesn not exist and user wants to download the data
-            reviews_raw = load_data_from_file('reviews', show_id)
-            
-            # Handle None
-            if reviews_raw is None:
-                reviews_raw = imdb_api.download_reviews(True)
-            
-            data_range = (0, 11)
-
-            # Prepare data for presentation
-            reviews_prepared = prepare_data_for_presentation(reviews_raw, seasons)
-
-            # Set labels
-            labels = list(reviews_prepared.keys())
-        elif 'r' in data:
-            # Load reviews from imdb and set data range as 0-11
-            reviews_raw = imdb_api.download_reviews(save)
-            data_range = (0, 11)
-
-            # Prepare data for presentation
-            reviews_prepared = prepare_data_for_presentation(reviews_raw, seasons)
-
-            # Set labels
-            labels = list(reviews_prepared.keys())
-
-        # Loading number of votes options
-        if load_file and 'v' in data:
-            # Load votes from file, can return None if file doesn not exist and user wants to download the data
-            votes_raw = load_data_from_file('votes', show_id)
-
-            # Handle None
-            if votes_raw is None:
-                votes_raw = imdb_api.download_number_of_votes(True)
-
-            # Prepare votes for presentation
-            votes_prepared = prepare_data_for_presentation(votes_raw, seasons)
-
-            # Set labels
-            labels = list(votes_prepared.keys())
-
-            # Set data range as 0-max value + 10% of max value
-            data_range = (0, max(votes_prepared.values()) + (0.1*max(votes_prepared.values())))
-        elif 'v' in data:
-            # Load votes from file and set data range as 0-max value
-            votes_raw = imdb_api.download_number_of_votes(save)
-
-            # Prepare votes for presentation
-            votes_prepared = prepare_data_for_presentation(votes_raw, seasons)
-
-            # Set labels
-            labels = list(votes_prepared.keys())
-
-            # Set data range as 0-max value + 10% of max value
-            data_range = (0, max(votes_prepared.values()) + (0.1*max(votes_prepared.values())))
-
-    # Normalize data if needed and set new data range
-    if normalize and not votes_raw is None:
+    # Normalize number of votes if needed
+    if normalize:
         votes_prepared = normalize_data(votes_prepared)
+    
+    # Get lables for the graph
+    labels = list(reviews_prepared.keys()) if not reviews_prepared is None else list(votes_prepared)
+
+    # Set data range
+    if not reviews_prepared is None or normalize:
         data_range = (0, 11)
+    else:
+        # Set data range as 0-max value + 10% of max value
+        data_range = (0, max(reviews_prepared.values()) + (0.1*max(votes_prepared.values())))
     
     # Create graph object
-    p = figure(x_range=labels, y_range=data_range, sizing_mode='stretch_both', title=imdb_api.name)
+    p = figure(x_range=labels, y_range=data_range, sizing_mode='stretch_both', title=show_name)
     print('Rendering the graph..')
 
     # Title location
@@ -138,7 +146,6 @@ def create_graph(show_id, save, normalize, load_file, data, average, seasons):
     
     # Show the graph
     show(p)
-
 
 def parse_arguments():
     """
@@ -187,7 +194,7 @@ def parse_arguments():
     # Get seasons
     seasons = retrive_seasons(args.seasons)
 
-    create_graph(show_id=show_id, save=args.save, normalize=normalize, load_file=args.file, data=args.data, average=args.average, seasons=seasons)
+    create_graph2(show_id=show_id, save=args.save, normalize=normalize, load_file=args.file, data=args.data, average=args.average, seasons=seasons)
 
 if __name__ == '__main__':
     parse_arguments()

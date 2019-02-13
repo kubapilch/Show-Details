@@ -2,12 +2,13 @@ import json
 from collections import OrderedDict
 import sys
 
-def save_data_to_file(data, data_type, show_id):
+def save_data_to_file(data, data_type, show_id, show_name):
     """
     Save given data to a file with right file name
     """    
     with open("{0}_{1}.json".format(data_type, show_id), "w") as f:
-        json.dump(data, f)
+        complete_data = {'show_name':show_name, 'data':data}
+        json.dump(complete_data, f)
 
 def load_data_from_file(data_type, show_id):
     """

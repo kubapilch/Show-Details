@@ -28,6 +28,7 @@ def normalize_data(data):
     """
     Normalize data to max value 10 and returns
     """
+    if data is None: return None
     # Top number in data pack
     top = max(data.values())
 
@@ -43,6 +44,9 @@ def prepare_data_for_presentation(data, seasons):
     """
     Prepare data for presentation, skip some episodes and change labels to ex. ["S1E14":8.6]
     """
+
+    if data is None: return None
+
     prepared_data = OrderedDict()
 
     # Loop through each season
