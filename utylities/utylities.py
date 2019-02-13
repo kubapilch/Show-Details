@@ -29,6 +29,7 @@ def normalize_data(data):
     Normalize data to max value 10 and returns
     """
     if data is None: return None
+
     # Top number in data pack
     top = max(data.values())
 
@@ -61,7 +62,7 @@ def prepare_data_for_presentation(data, seasons):
             # If the episode data is 0 skip this episode, ex. episodes hasn't been aired yet or noone has rated it.
             if episode_data == 0:
                 continue
-            
+
             # Save data in a format that will be presented ex. 'S1E13':8.5
             prepared_data['S{0}E{1}'.format(season, episode_number)] = float(episode_data)
 
@@ -81,12 +82,12 @@ def retrive_seasons(data):
     try:
         start = int(data.split(':')[0])
         end = int(data.split(':')[1])
-    except:
+    except ValueError:
         sys.exit('Wrong filtering format, --seasons START:END, if you want to show only one season set start and end as the same value')
 
     if start > end or start == 0 or end > 100:
         sys.exit('Wrong filtering format, --seasons START:END, if you want to show only one season set start and end as the same value')
-    
+
     # Only one season
     if start == end:
         return [start]

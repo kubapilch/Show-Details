@@ -2,7 +2,6 @@ from bokeh.plotting import figure, output_file, show
 from sources.files_io import load_data_from_file
 from sources.api_imdb import API_IMDb
 from utylities.utylities import prepare_data_for_presentation, normalize_data, retrive_id_from_link, retrive_seasons
-from collections import OrderedDict
 import argparse
 
 def get_data_from_file(show_id, save, data):
